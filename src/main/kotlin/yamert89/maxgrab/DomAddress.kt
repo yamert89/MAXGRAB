@@ -8,6 +8,13 @@ open class DomAddress(val identifier: DOMIdentifier<*>, val rootAddress: DomAddr
                 && rootAddress == other.rootAddress
                 && indexes == other.indexes
     }
+
+    override fun hashCode(): Int {
+        var result = identifier.hashCode()
+        result = 31 * result + (rootAddress?.hashCode() ?: 0)
+        result = 31 * result + indexes.hashCode()
+        return result
+    }
 }
 
 

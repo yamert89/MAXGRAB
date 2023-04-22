@@ -5,7 +5,7 @@ import java.io.File
 import kotlin.test.assertEquals
 
 class ItemsTest {
-    lateinit var address: DomAddress;
+    lateinit var address: DomAddress
     @BeforeEach
     fun setup(){
         val identifier = DOMIdentifier("css-class", DomIdentifierType.CLASS)
@@ -22,8 +22,8 @@ class ItemsTest {
 
     @Test
     fun `new record`(){
-        val htmlElement = HtmlElement(1, "1", address)
-        val htmlElement2 = HtmlElement(2, "2", address)
+        val htmlElement = HtmlElement(1L, "1", address)
+        val htmlElement2 = HtmlElement(2L, "2", address)
         val htmlRecord = HtmlRecord(1L, listOf(htmlElement, htmlElement2))
         assertEquals(listOf(htmlElement, htmlElement2), htmlRecord.elements)
         assertEquals(1L, htmlRecord.id)
@@ -49,7 +49,7 @@ class ItemsTest {
             resourceFile("1.html"),
             listOf(inputDOMIdentifier1, inputDOMIdentifier2)
         )
-        val elements = mutableListOf<HtmlElement<Long, String>>()
+        val elements = mutableListOf<HtmlElement<String>>()
         val rootAddress = DomAddress(DOMIdentifier("root", DomIdentifierType.CLASS))
         elements.add(HtmlElement(1L, "text", DomAddress(DOMIdentifier("c1", DomIdentifierType.CLASS), rootAddress, listOf(0))))
         //elements.add(HtmlElement(2L, "0.5", DomAddress(DOMIdentifier("c2", DomIdentifierType.CLASS), rootAddress, listOf(1))))

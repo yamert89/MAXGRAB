@@ -8,7 +8,7 @@ import kotlin.random.Random
 
 class JsoupPageParser: PageParser{
     override fun parse(url: String): List<HtmlRecord> {
-        return listOf(HtmlRecord(1L, emptyList()));
+        return listOf(HtmlRecord(1L, emptyList()))
     }
 
     private fun findParent(el1: Element, el2: Element): Element{
@@ -63,11 +63,11 @@ class JsoupPageParser: PageParser{
         return listOf(record)
     }
 
-    private fun List<Pair<Element, MutableList<Int>>>.convertToHtmlElements(rootElement: Element): List<HtmlElement<Int, String>> {
+    private fun List<Pair<Element, MutableList<Int>>>.convertToHtmlElements(rootElement: Element): List<HtmlElement<String>> {
         val rootAddress = DomAddress(DOMIdentifier(rootElement.className(), DomIdentifierType.CLASS))
-        val htmlElements: List<HtmlElement<Int, String>> = this.map { el ->
+        val htmlElements: List<HtmlElement<String>> = this.map { el ->
             HtmlElement(
-                Random.nextInt(),
+                Random.nextLong(),
                 el.first.text(),
                 DomAddress(DOMIdentifier(el.first.className(), DomIdentifierType.CLASS), rootAddress, el.second)
             )
