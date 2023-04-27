@@ -42,18 +42,38 @@ class ItemsTest {
 
     @Test
     fun `children in parent html1`(){
-        val pageParser = JsoupPageParser()
+        val pageParser = JsoupPageParser(JsoupDomAlgorithmImpl())
         val inputDOMIdentifier1 = DOMIdentifier("c1", DomIdentifierType.CLASS)
-        val inputDOMIdentifier2 = DOMIdentifier("c3", DomIdentifierType.CLASS)
+        val inputDOMIdentifier2 = DOMIdentifier("c2", DomIdentifierType.CLASS)
+        val inputDOMIdentifier3 = DOMIdentifier("c3", DomIdentifierType.CLASS)
         val records: List<HtmlRecord> = pageParser.parse(
             resourceFile("1.html"),
-            listOf(inputDOMIdentifier1, inputDOMIdentifier2)
+            listOf(inputDOMIdentifier1, inputDOMIdentifier2, inputDOMIdentifier3)
         )
         val elements = mutableListOf<HtmlElement<String>>()
         val rootAddress = DomAddress(DOMIdentifier("root", DomIdentifierType.CLASS))
         elements.add(HtmlElement(1L, "text", DomAddress(DOMIdentifier("c1", DomIdentifierType.CLASS), rootAddress, listOf(0))))
-        //elements.add(HtmlElement(2L, "0.5", DomAddress(DOMIdentifier("c2", DomIdentifierType.CLASS), rootAddress, listOf(1))))
+        elements.add(HtmlElement(2L, "0.5", DomAddress(DOMIdentifier("c2", DomIdentifierType.CLASS), rootAddress, listOf(1))))
         elements.add(HtmlElement(3L, "145", DomAddress(DOMIdentifier("c3", DomIdentifierType.CLASS), rootAddress, listOf(2))))
+        val record = HtmlRecord(0L, elements)
+        assertEquals(record, records.first())
+    }
+
+    @Test
+    fun `children in parent html2`(){
+        val pageParser = JsoupPageParser(JsoupDomAlgorithmImpl())
+        val inputDOMIdentifier1 = DOMIdentifier("c1", DomIdentifierType.CLASS)
+        val inputDOMIdentifier2 = DOMIdentifier("c2", DomIdentifierType.CLASS)
+        val inputDOMIdentifier3 = DOMIdentifier("c3", DomIdentifierType.CLASS)
+        val records: List<HtmlRecord> = pageParser.parse(
+            resourceFile("2.html"),
+            listOf(inputDOMIdentifier1, inputDOMIdentifier2, inputDOMIdentifier3)
+        )
+        val elements = mutableListOf<HtmlElement<String>>()
+        val rootAddress = DomAddress(DOMIdentifier("root", DomIdentifierType.CLASS))
+        elements.add(HtmlElement(1L, "text", DomAddress(DOMIdentifier("c1", DomIdentifierType.CLASS), rootAddress, listOf(0))))
+        elements.add(HtmlElement(2L, "0.5", DomAddress(DOMIdentifier("c2", DomIdentifierType.CLASS), rootAddress, listOf(1, 0, 0))))
+        elements.add(HtmlElement(3L, "145", DomAddress(DOMIdentifier("c3", DomIdentifierType.CLASS), rootAddress, listOf(2, 0, 1))))
         val record = HtmlRecord(0L, elements)
         assertEquals(record, records.first())
     }

@@ -1,5 +1,9 @@
 package yamert89.maxgrab
 
-interface JsoupDomAlgorithm<TARGET_ELEMENTS> {
+import org.jsoup.nodes.Document
+import org.jsoup.nodes.Element
+
+interface JsoupDomAlgorithm {
+    fun getHtmlElements(document: Document, inputIdentifiers: List<DOMIdentifier<*>>): List<HtmlElement<*>>
 
 }
