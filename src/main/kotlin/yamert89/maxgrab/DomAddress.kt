@@ -15,6 +15,10 @@ open class DomAddress(val identifier: DOMIdentifier<*>, val rootAddress: DomAddr
         result = 31 * result + indexes.hashCode()
         return result
     }
+
+    override fun toString(): String {
+        return "root = ${rootAddress?.identifier?.value}, indexes = $indexes"
+    }
 }
 
 

@@ -9,14 +9,17 @@ class JsoupDomAlgorithmImpl : JsoupDomAlgorithm {
         val targetElements: List<Pair<Element, MutableList<Int>>> = inputIdentifiers.map { document.getElementsByClass(it.value.toString()).first()!! to mutableListOf<Int>() }
         if (targetElements.isEmpty()) throw IllegalStateException("Target elements not found")
 
-        val elementsWithIndexes = mutableSetOf<Element>()
+        val rootEl = findRootElement(targetElements)
 
+        targetElements.forEach { targetElement ->
+            targetElement.second.addAll(targetElement.first.fillIndexList(rootEl))
+        }
+        return targetElements.convertToHtmlElements(rootEl)
+    }
+
+    private fun findRootElement(targetElements: List<Pair<Element, MutableList<Int>>>): Element {
         fun operateParent(el: Element): Element {
-            val targetElement = targetElements.find { it.first === el }!!
-            val resEl = el.parents().first()!!
-            val childIdx = resEl.children().indexOf(targetElement.first)
-            if (!elementsWithIndexes.contains(targetElement.first)) targetElement.second.add(0, childIdx)
-            return resEl
+            return el.parents().first()!!
         }
 
         var idx = 1
@@ -35,21 +38,25 @@ class JsoupDomAlgorithmImpl : JsoupDomAlgorithm {
                     h2--
                 }
             }
-            var child1 = el1
-            var child2 = el2
             while (!el1.hasSameValue(el2)){
-                child1 = el1
-                child2 = el2
-                el1 = operateParent(child1)
-                el2 = operateParent(child2)
+                el1 = operateParent(el1)
+                el2 = operateParent(el2)
             }
-            elementsWithIndexes.add(child1)
-            elementsWithIndexes.add(child2)
             idx++
         }
+        return el1
+    }
 
-        val rootEl = el1
-        return targetElements.convertToHtmlElements(rootEl)
+    private fun Element.fillIndexList(root: Element): List<Int> {
+        val list = mutableListOf<Int>()
+        var parent = this
+        var el = this
+        while (parent != root){
+            parent = el.parent()!!
+            list.add(0, parent.children().indexOf(el))
+            el = parent
+        }
+        return list
     }
 
     private fun List<Pair<Element, MutableList<Int>>>.convertToHtmlElements(rootElement: Element): List<HtmlElement<String>> {

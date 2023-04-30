@@ -25,4 +25,8 @@ class HtmlElement<T>(val id: Long, val value: T, val address: DomAddress?) {
         result = 31 * result + (address?.hashCode() ?: 0)
         return result
     }
+
+    override fun toString(): String {
+        return "element: id = $id, val = $value, address = $address"
+    }
 }

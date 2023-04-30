@@ -73,7 +73,7 @@ class ItemsTest {
         val rootAddress = DomAddress(DOMIdentifier("root", DomIdentifierType.CLASS))
         elements.add(HtmlElement(1L, "text", DomAddress(DOMIdentifier("c1", DomIdentifierType.CLASS), rootAddress, listOf(0))))
         elements.add(HtmlElement(2L, "0.5", DomAddress(DOMIdentifier("c2", DomIdentifierType.CLASS), rootAddress, listOf(1, 0, 0))))
-        elements.add(HtmlElement(3L, "145", DomAddress(DOMIdentifier("c3", DomIdentifierType.CLASS), rootAddress, listOf(2, 0, 1))))
+        elements.add(HtmlElement(3L, "145", DomAddress(DOMIdentifier("c3", DomIdentifierType.CLASS), rootAddress, listOf(2, 1))))
         val record = HtmlRecord(0L, elements)
         assertEquals(record, records.first())
     }

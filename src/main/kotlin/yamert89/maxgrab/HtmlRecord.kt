@@ -17,4 +17,8 @@ class HtmlRecord(val id: Long, val elements: List<HtmlElement<*>>) {
         result = 31 * result + elements.hashCode()
         return result
     }
+
+    override fun toString(): String {
+        return "record: id = $id, elements = [\n{${elements.joinToString("},\n{")}}\n]\n"
+    }
 }
