@@ -4,8 +4,15 @@ import yamert89.maxgrab.*
 import java.io.File
 import kotlin.test.assertEquals
 
-class ItemsTest {
+class ParserTest {
     lateinit var address: DomAddress
+
+    private fun resourceFile(fileName: String): File{
+        val fileName1 = ParserTest::class.java.getResource(fileName).file
+        val file = File(fileName1)
+        return file
+    }
+
     @BeforeEach
     fun setup(){
         val identifier = DOMIdentifier("css-class", DomIdentifierType.CLASS)
@@ -46,7 +53,7 @@ class ItemsTest {
         val inputDOMIdentifier1 = DOMIdentifier("c1", DomIdentifierType.CLASS)
         val inputDOMIdentifier2 = DOMIdentifier("c2", DomIdentifierType.CLASS)
         val inputDOMIdentifier3 = DOMIdentifier("c3", DomIdentifierType.CLASS)
-        val records: List<HtmlRecord> = pageParser.parse(
+        val parsedElements = pageParser.parseSourceElements(
             resourceFile("1.html"),
             listOf(inputDOMIdentifier1, inputDOMIdentifier2, inputDOMIdentifier3)
         )
@@ -55,8 +62,7 @@ class ItemsTest {
         elements.add(HtmlElement(1L, "text", DomAddress(DOMIdentifier("c1", DomIdentifierType.CLASS), rootAddress, listOf(0))))
         elements.add(HtmlElement(2L, "0.5", DomAddress(DOMIdentifier("c2", DomIdentifierType.CLASS), rootAddress, listOf(1))))
         elements.add(HtmlElement(3L, "145", DomAddress(DOMIdentifier("c3", DomIdentifierType.CLASS), rootAddress, listOf(2))))
-        val record = HtmlRecord(0L, elements)
-        assertEquals(record, records.first())
+        assertEquals(elements, parsedElements)
     }
 
     @Test
@@ -65,7 +71,7 @@ class ItemsTest {
         val inputDOMIdentifier1 = DOMIdentifier("c1", DomIdentifierType.CLASS)
         val inputDOMIdentifier2 = DOMIdentifier("c2", DomIdentifierType.CLASS)
         val inputDOMIdentifier3 = DOMIdentifier("c3", DomIdentifierType.CLASS)
-        val records: List<HtmlRecord> = pageParser.parse(
+        val parsedElements = pageParser.parseSourceElements(
             resourceFile("2.html"),
             listOf(inputDOMIdentifier1, inputDOMIdentifier2, inputDOMIdentifier3)
         )
@@ -74,15 +80,20 @@ class ItemsTest {
         elements.add(HtmlElement(1L, "text", DomAddress(DOMIdentifier("c1", DomIdentifierType.CLASS), rootAddress, listOf(0))))
         elements.add(HtmlElement(2L, "0.5", DomAddress(DOMIdentifier("c2", DomIdentifierType.CLASS), rootAddress, listOf(1, 0, 0))))
         elements.add(HtmlElement(3L, "145", DomAddress(DOMIdentifier("c3", DomIdentifierType.CLASS), rootAddress, listOf(2, 1))))
-        val record = HtmlRecord(0L, elements)
-        assertEquals(record, records.first())
+        assertEquals(elements, parsedElements)
     }
 
-    private fun resourceFile(fileName: String): File{
-        val fileName1 = ItemsTest::class.java.getResource(fileName).file
-        val file = File(fileName1)
-        return file
+    @Test
+    fun t(){
+        val pageParser = JsoupPageParser(JsoupDomAlgorithmImpl())
+        val inputDOMIdentifier1 = DOMIdentifier("c1", DomIdentifierType.CLASS)
+        val inputDOMIdentifier2 = DOMIdentifier("c2", DomIdentifierType.CLASS)
+        val parsedElements = pageParser.parseTree(resourceFile("3.html"),
+            listOf(inputDOMIdentifier1, inputDOMIdentifier2)
+        )
     }
+
+
 
 
 

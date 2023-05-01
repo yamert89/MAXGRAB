@@ -5,7 +5,7 @@ import org.jsoup.nodes.Element
 import kotlin.random.Random
 
 class JsoupDomAlgorithmImpl : JsoupDomAlgorithm {
-    override fun getHtmlElements(document: Document, inputIdentifiers: List<DOMIdentifier<*>>): List<HtmlElement<*>> {
+    override fun findSourceHtmlElements(document: Document, inputIdentifiers: List<DOMIdentifier<*>>): List<HtmlElement<*>> {
         val targetElements: List<Pair<Element, MutableList<Int>>> = inputIdentifiers.map { document.getElementsByClass(it.value.toString()).first()!! to mutableListOf<Int>() }
         if (targetElements.isEmpty()) throw IllegalStateException("Target elements not found")
 
@@ -15,6 +15,10 @@ class JsoupDomAlgorithmImpl : JsoupDomAlgorithm {
             targetElement.second.addAll(targetElement.first.fillIndexList(rootEl))
         }
         return targetElements.convertToHtmlElements(rootEl)
+    }
+
+    override fun findTreeHtmlElements(document: Document, inputIdentifiers: List<DOMIdentifier<String>>): List<HtmlElement<*>> {
+        return emptyList()
     }
 
     private fun findRootElement(targetElements: List<Pair<Element, MutableList<Int>>>): Element {

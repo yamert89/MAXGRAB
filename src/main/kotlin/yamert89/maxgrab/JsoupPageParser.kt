@@ -1,33 +1,21 @@
 package yamert89.maxgrab
 
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
 import java.io.File
-import kotlin.random.Random
 
 
 class JsoupPageParser(private val domAlgorithm: JsoupDomAlgorithm): PageParser{
-    override fun parse(url: String): List<HtmlRecord> {
-        return listOf(HtmlRecord(1L, emptyList()))
+    override fun parseSourceElements(url: String): List<HtmlElement<*>> {
+        return emptyList()
     }
 
-    private fun findParent(el1: Element, el2: Element): Element{
-        for (i in el1.parents().lastIndex downTo 0){
-            if (el1.parents()[i].hasSameValue(el2.parents()[i])) return el1
-        }
-        throw IllegalStateException("Parent not found")
-    }
-
-
-
-
-    override fun parse(file: File, inputIdentifiers: List<DOMIdentifier<*>>): List<HtmlRecord>{
+    override fun parseSourceElements(file: File, inputIdentifiers: List<DOMIdentifier<*>>): List<HtmlElement<*>> {
         val document = Jsoup.parse(file)
-        val htmlElements = domAlgorithm.getHtmlElements(document, inputIdentifiers)
-        val record = HtmlRecord(0L, htmlElements)
-        return listOf(record)
+        return domAlgorithm.findSourceHtmlElements(document, inputIdentifiers)
     }
 
-
-
+    override fun parseTree(file: File, inputIdentifiers: List<DOMIdentifier<String>>): List<HtmlElement<*>> {
+        val document = Jsoup.parse(file)
+        return domAlgorithm.findTreeHtmlElements(document, inputIdentifiers)
+    }
 }
