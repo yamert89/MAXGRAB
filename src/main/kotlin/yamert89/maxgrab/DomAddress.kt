@@ -1,6 +1,6 @@
 package yamert89.maxgrab
 
-open class DomAddress(val identifier: DOMIdentifier<*>, val rootAddress: DomAddress? = null, val indexes: List<Int> = emptyList()) {
+open class DomAddress(val identifier: DOMIdentifier, val rootAddress: DomAddress? = null, val indexes: List<Int> = emptyList()) {
 
     override fun equals(other: Any?): Boolean {
         return if (other !is DomAddress) false

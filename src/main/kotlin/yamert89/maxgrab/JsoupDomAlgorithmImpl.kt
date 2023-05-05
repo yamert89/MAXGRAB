@@ -2,11 +2,16 @@ package yamert89.maxgrab
 
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
+import org.jsoup.select.Elements
+import yamert89.maxgrab.exceptions.ElementNotFoundException
 import kotlin.random.Random
 
 class JsoupDomAlgorithmImpl : JsoupDomAlgorithm {
-    override fun findSourceHtmlElements(document: Document, inputIdentifiers: List<DOMIdentifier<*>>): List<HtmlElement<*>> {
-        val targetElements: List<Pair<Element, MutableList<Int>>> = inputIdentifiers.map { document.getElementsByClass(it.value.toString()).first()!! to mutableListOf<Int>() }
+    override fun findSourceHtmlElements(document: Document, inputIdentifiers: List<DOMIdentifier>): List<HtmlElement<*>> {
+        val targetElements: List<Pair<Element, MutableList<Int>>> = inputIdentifiers.map {
+            val element = document.getElement(it)
+            element to mutableListOf<Int>() }
+
         if (targetElements.isEmpty()) throw IllegalStateException("Target elements not found")
 
         val rootEl = findRootElement(targetElements)
@@ -17,7 +22,9 @@ class JsoupDomAlgorithmImpl : JsoupDomAlgorithm {
         return targetElements.convertToHtmlElements(rootEl)
     }
 
-    override fun findTreeHtmlElements(document: Document, inputIdentifiers: List<DOMIdentifier<String>>): List<HtmlElement<*>> {
+    override fun findTreeHtmlElements(document: Document, inputIdentifiers: List<DOMIdentifier>): List<HtmlElement<*>> {
+        val sourceHtmlElements = findSourceHtmlElements(document, inputIdentifiers)
+
         return emptyList()
     }
 
@@ -73,5 +80,25 @@ class JsoupDomAlgorithmImpl : JsoupDomAlgorithm {
             )
         }
         return htmlElements
+    }
+
+    private fun Document.getElement(identifier: DOMIdentifier): Element{
+        val elements = when(identifier.type){
+            DomIdentifierType.CLASS -> getElementsByClass(identifier.value)
+            DomIdentifierType.ID -> Elements(getElementById(identifier.value))
+            DomIdentifierType.TAG -> getElementsByTag(identifier.value)
+        }
+        if (elements.isEmpty() || elements.first() == null) throw ElementNotFoundException()
+        if (elements.size > 1 && identifier.attributes != null) return getByAttr(identifier.attributes)
+        return elements.first()!!
+    }
+
+    private fun Document.getByAttr(attributes: List<Pair<String, String?>>): Element {
+        val attr = attributes.first()
+        val elements = if (attr.second != null) getElementsByAttributeValue(attr.first, attr.second!!)
+        else getElementsByAttribute(attr.first)
+        if (elements.isEmpty()) throw ElementNotFoundException()
+        if (elements.size > 1) return getByAttr(attributes.subList(1, attributes.lastIndex))
+        return elements.first()!!
     }
 }
