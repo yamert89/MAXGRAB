@@ -8,18 +8,19 @@ import kotlin.random.Random
 
 class JsoupDomAlgorithmImpl : JsoupDomAlgorithm {
     override fun findSourceHtmlElements(document: Document, inputIdentifiers: List<DOMIdentifier>): List<HtmlElement<*>> {
-        val targetElements: List<Pair<Element, MutableList<Int>>> = inputIdentifiers.map {
+        val intermediateElements: List<IntermediateElement> = inputIdentifiers.map {
             val element = document.getElement(it)
-            element to mutableListOf<Int>() }
-
-        if (targetElements.isEmpty()) throw IllegalStateException("Target elements not found")
-
-        val rootEl = findRootElement(targetElements)
-
-        targetElements.forEach { targetElement ->
-            targetElement.second.addAll(targetElement.first.fillIndexList(rootEl))
+            IntermediateElement(element, it )
         }
-        return targetElements.convertToHtmlElements(rootEl)
+
+        if (intermediateElements.isEmpty()) throw ElementNotFoundException()
+
+        val rootEl = findRootElement(intermediateElements)
+
+        intermediateElements.forEach { intermediateElement ->
+            intermediateElement.indexes.addAll(intermediateElement.element.fillIndexList(rootEl))
+        }
+        return intermediateElements.convertToHtmlElements(rootEl)
     }
 
     override fun findTreeHtmlElements(document: Document, inputIdentifiers: List<DOMIdentifier>): List<HtmlElement<*>> {
@@ -28,16 +29,16 @@ class JsoupDomAlgorithmImpl : JsoupDomAlgorithm {
         return emptyList()
     }
 
-    private fun findRootElement(targetElements: List<Pair<Element, MutableList<Int>>>): Element {
+    private fun findRootElement(intermediateElements: List<IntermediateElement>): Element {
         fun operateParent(el: Element): Element {
             return el.parents().first()!!
         }
 
         var idx = 1
-        var el1: Element = targetElements[0].first
-        while (idx <= targetElements.lastIndex){
-            el1 = targetElements[idx - 1].first
-            var el2 = targetElements[idx].first
+        var el1: Element = intermediateElements[0].element
+        while (idx <= intermediateElements.lastIndex){
+            el1 = intermediateElements[idx - 1].element
+            var el2 = intermediateElements[idx].element
             var h1 = el1.parents().size
             var h2 = el2.parents().size
             while (h1 != h2){
@@ -70,13 +71,13 @@ class JsoupDomAlgorithmImpl : JsoupDomAlgorithm {
         return list
     }
 
-    private fun List<Pair<Element, MutableList<Int>>>.convertToHtmlElements(rootElement: Element): List<HtmlElement<String>> {
+    private fun List<IntermediateElement>.convertToHtmlElements(rootElement: Element): List<HtmlElement<String>> {
         val rootAddress = DomAddress(DOMIdentifier(rootElement.className(), DomIdentifierType.CLASS))
         val htmlElements: List<HtmlElement<String>> = this.map { el ->
             HtmlElement(
                 Random.nextLong(),
-                el.first.text(),
-                DomAddress(DOMIdentifier(el.first.className(), DomIdentifierType.CLASS), rootAddress, el.second)
+                el.element.text(),
+                DomAddress(el.identifier, rootAddress, el.indexes)
             )
         }
         return htmlElements
