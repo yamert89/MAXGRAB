@@ -15,7 +15,9 @@ class DOMIdentifier(val value: String, val type: DomIdentifierType, val attribut
         return result
     }
 
-
+    override fun toString(): String {
+        return "|identifier|:$value, $type, $attributes"
+    }
 }
 
 enum class DomIdentifierType {

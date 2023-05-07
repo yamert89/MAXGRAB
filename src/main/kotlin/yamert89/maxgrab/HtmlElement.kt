@@ -27,6 +27,6 @@ class HtmlElement<T>(val id: Long, val value: T, val address: DomAddress?) {
     }
 
     override fun toString(): String {
-        return "element: id = $id, val = $value, address = $address"
+        return "element: id = $id, value = $value, address = $address"
     }
 }
